@@ -1,0 +1,5 @@
+# Mọi file text dùng LF, kể cả khi clone trên Windows
+# (entrypoint.sh dùng CRLF sẽ làm container Linux không chạy được)
+* text=auto eol=lf
+*.png binary
+*.jpg binary

@@ -1,0 +1,5 @@
+# Bí mật và file sinh ra tại từng máy, không đẩy lên git
+.env
+wazuh/config/wazuh_indexer_ssl_certs/
+out/
+*/state/
