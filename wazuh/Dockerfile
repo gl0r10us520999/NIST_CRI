@@ -1,16 +1,9 @@
 FROM wazuh/wazuh-manager:4.14.9
 
-# 1. ossec.conf: build vao image, khong mount truc tiep
-#    Sua: wazuh/config/wazuh_cluster/wazuh_manager.conf -> up -d --build
+# ossec.conf: đi qua staging /wazuh-config-mount (cơ chế của image)
 COPY config/wazuh_cluster/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
 
-# 2. filebeat.yml: bat ca alerts.enabled va archives.enabled = true
-RUN f=/etc/filebeat/filebeat.yml; \
-    if [ -f "$f" ]; then \
-      sed -i '/alerts:/{n;s/enabled: false/enabled: true/}' "$f" && \
-      sed -i '/archives:/{n;s/enabled: false/enabled: true/}' "$f" && \
-      echo "=== filebeat.yml sau khi sua ===" && \
-      grep -A2 'alerts:\|archives:' "$f"; \
-    else \
-      echo "WARN: $f not found"; \
-    fi
+# filebeat.yml nằm trong PERMANENT_DATA_EXCP -> image KHÔI PHỤC nó từ bản
+# /var/ossec/data_tmp/exclusion/... mỗi lần boot, đè lên path live.
+# Vì vậy phải ghi file của ta vào ĐÚNG nguồn restore đó, không phải /etc/filebeat.
+COPY --chown=root:root config/filebeat.yml /var/ossec/data_tmp/exclusion/etc/filebeat/filebeat.yml
